@@ -40,6 +40,7 @@ function DrawBargraph(sampleId) {
     })
 }
 
+// Function to draw the Bubblechart
 function DrawBubblechart(sampleId) {
     console.log(`DrawBubblechart(${sampleId})`);
 
@@ -78,9 +79,40 @@ function DrawBubblechart(sampleId) {
     })
 }
 
+// Function to populate the Demographic Infobox
 function DisplayMetadata(sampleId) {
     console.log(`DisplayMetadata(${sampleId})`);
 
+    // Clear demographic info 
+    document.getElementById("sample-metadata").innerHTML = "";
+
+    d3.json("data/samples.json").then(data => {
+
+        var metaData = data.metadata;
+        var resultArray = metaData.filter(s => s.id == sampleId);
+        var result = resultArray[0];
+
+        // Assigning the information to extract from the dataset
+        var id = result.id;
+        var ethnicity = result.ethnicity;
+        var gender = result.gender;
+        var age = result.age;
+        var location = result.location;
+        var bbtype = result.bbtype;
+        var wfreq = result.wfreq;
+        var info = [id,ethnicity,gender,age,location,bbtype,wfreq];
+
+        // Append new data to a list within the demographic box
+        var ul = d3.select("#sample-metadata").append("ul");
+        ul.append("li").text(`id: ${id}`);
+        ul.append("li").text(`ethnicity: ${ethnicity}`);
+        ul.append("li").text(`gender: ${gender}`);
+        ul.append("li").text(`age: ${age}`);
+        ul.append("li").text(`location: ${location}`);
+        ul.append("li").text(`bbtype: ${bbtype}`);
+        ul.append("li").text(`wfreq: ${wfreq}`);
+
+    })
 }
 
 function optionChanged(newSampleId) {
