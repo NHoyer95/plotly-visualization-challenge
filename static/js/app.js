@@ -2,7 +2,9 @@
 
 console.log("app.js loaded");
 
-// Define function for creating the graphs
+// Define functions for creating the graphs
+
+// Function to draw the Bargraph
 function DrawBargraph(sampleId) {
     console.log(`DrawBargraph(${sampleId})`);
 
@@ -41,6 +43,39 @@ function DrawBargraph(sampleId) {
 function DrawBubblechart(sampleId) {
     console.log(`DrawBubblechart(${sampleId})`);
 
+    // Read in the data from samples.json
+    d3.json("data/samples.json").then(data => {
+
+        var samples = data.samples;
+        var resultArray = samples.filter(s => s.id == sampleId);
+        var result = resultArray[0];
+
+        var otu_ids = result.otu_ids;
+        var otu_labels = result.otu_labels;
+        var sample_values = result.sample_values;
+
+        // Create the trace for the bubble chart
+        var bubbleData = {
+            x: otu_ids,
+            y: sample_values,
+            mode: "markers",
+            marker: {
+                size: sample_values,
+                color: otu_ids,
+                opacity: 1
+            },
+            text: otu_labels
+        }
+
+        var bubbleArray = [bubbleData];
+
+        var bubbleLayout = {
+            xaxis: {title: "OTU IDs"},
+            yaxis: {title: "Sample Values"}
+        }
+
+        Plotly.newPlot("bubble", bubbleArray, bubbleLayout);
+    })
 }
 
 function DisplayMetadata(sampleId) {
@@ -51,6 +86,7 @@ function DisplayMetadata(sampleId) {
 function optionChanged(newSampleId) {
     console.log(`User selected ${newSampleId}`);
 
+    // Update the visuals
     DrawBargraph(newSampleId);
     DrawBubblechart(newSampleId);
     DisplayMetadata(newSampleId);
@@ -65,9 +101,7 @@ function InitDashboard() {
     var selector = d3.select("#selDataset");
 
     d3.json("data/samples.json").then(data => {
-        
-        // console.log(data);
-    
+            
         var sampleNames = data.names;
 
         sampleNames.forEach(sampleId => {
@@ -78,21 +112,14 @@ function InitDashboard() {
         });
 
         var id = sampleNames[0];
-
+        
         DrawBargraph(id);
-
         DrawBubblechart(id);
-
         DisplayMetadata(id);
-
 
     });
 
-    // Update the bargraph
 
-    // Update the bubblechart
-
-    // Update demographic information
 }
 
 InitDashboard();
